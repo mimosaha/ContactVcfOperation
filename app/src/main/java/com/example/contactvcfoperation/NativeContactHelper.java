@@ -74,6 +74,11 @@ public class NativeContactHelper {
                 name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 name = "AbcAbcAbc";
 
+                String imageUri = cursor.getString(cursor.getColumnIndex
+                        (ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+
+                imageEncoded = convertUriToBase64(context, imageUri);
+
                 if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
 
                     //the below cursor will give you details for multiple contacts
@@ -144,14 +149,6 @@ public class NativeContactHelper {
 
             File vcfFile = new File(filePath);
 
-            /*String content = "BEGIN:VCARD\n" +
-                    "VERSION:3.0\n" +
-                    "CLASS:PUBLIC\nPRODID:-" +
-                    "//class_vcard from  TroyWolf.com//NONSGML Version 1//EN\n" +
-                    "FN:"+contactName+"\n" +
-                    "TEL;TYPE=cell,voice:"+number+"\n" +
-                    "PHOTO;TYPE=JPEG;ENCODING=BASE64:"+imageEncoded+"\nTZ:+0000\nEND:VCARD";*/
-
             FileWriter fw = new FileWriter(vcfFile);
             fw.write("BEGIN:VCARD\r\n");
             fw.write("VERSION:2.1\r\n");
@@ -162,7 +159,8 @@ public class NativeContactHelper {
                 fw.write("TEL;TYPE=HOME,VOICE:" + typeHome + "\r\n");
             }
             if (!TextUtils.isEmpty(imageEncoded)) {
-                fw.write("PHOTO;TYPE=JPEG;ENCODING=BASE64:" + imageEncoded + "\r\n");
+                /*fw.write("PHOTO;TYPE=JPEG;ENCODING=BASE64:" + imageEncoded + "\r\n");*/
+                fw.write("PHOTO;ENCODING=B;TYPE=JPEG:" + imageEncoded + "\r\n");
             }
             if (!typeWork.equals("") && typeWork != null) {
                 fw.write("TEL;TYPE=WORK,VOICE:" + typeWork + "\r\n");
@@ -234,26 +232,6 @@ public class NativeContactHelper {
         }
     }
 
-    /*private String getImageString(String number) {
-        try {
-            Context context = ContactApplication.getAppContext();
-            Uri photoUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Uri.encode(number));
-            Bitmap photoBitmap;
-            ContentResolver cr = context.getContentResolver();
-            InputStream is = ContactsContract.Contacts.openContactPhotoInputStream(cr, photoUri);
-            photoBitmap = BitmapFactory.decodeStream(is);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-            byte[] bitmapdata = bos.toByteArray();
-            return Base64.encodeToString(bitmapdata, Base64.DEFAULT);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    String.format("PHOTO;ENCODING=B;TYPE=JPEG: ,%s\r\n", convertUriToBase64(context, photoUri));
-
     private String convertUriToBase64(Context context, String photoUri) {
         InputStream imageStream = null;
         try {
@@ -268,5 +246,5 @@ public class NativeContactHelper {
         byte[] bitmapData = bos.toByteArray();
         // line break has to be removed, so it is on the same line as PHOTO
         return Base64.encodeToString(bitmapData, Base64.DEFAULT).replaceAll("\n", "");
-    }*/
+    }
 }
