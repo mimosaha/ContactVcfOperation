@@ -252,6 +252,8 @@ public class NativeContactHelper {
         return "";
     }
 
+    String.format("PHOTO;ENCODING=B;TYPE=JPEG: ,%s\r\n", convertUriToBase64(context, photoUri));
+
     private String convertUriToBase64(Context context, String photoUri) {
         InputStream imageStream = null;
         try {
